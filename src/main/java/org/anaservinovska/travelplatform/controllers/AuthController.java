@@ -2,7 +2,6 @@ package org.anaservinovska.travelplatform.controllers;
 
 import jakarta.validation.Valid;
 import org.anaservinovska.travelplatform.dto.RegisterRequest;
-import org.anaservinovska.travelplatform.services.CustomUserDetailsService;
 import org.anaservinovska.travelplatform.services.UserService;
 import org.anaservinovska.travelplatform.utils.JwtUtil;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/auth")
 public class AuthController {
 
@@ -49,9 +47,13 @@ public class AuthController {
         return ResponseEntity.ok().headers(headers).build();
     }
     @PostMapping("/register")
-    public String register(@RequestBody @Valid RegisterRequest registerRequest) {
+    public ResponseEntity<String> register(@RequestBody @Valid RegisterRequest registerRequest) {
         // Delegate registration logic to UserService
-        return userService.registerUser(registerRequest);
+        try {
+            return ResponseEntity.ok(userService.registerUser(registerRequest));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("User already exists!");
+        }
     }
 
     @PostMapping("/logout")

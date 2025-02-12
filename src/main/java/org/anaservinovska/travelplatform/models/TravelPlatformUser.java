@@ -1,12 +1,18 @@
 package org.anaservinovska.travelplatform.models;
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TravelPlatformUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,9 +27,12 @@ public class TravelPlatformUser {
     @Column(nullable = false)
     private String password;
 
-//    @ElementCollection(fetch = FetchType.EAGER)
-//    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-//    @Column(name = "role")
-//    private Set<String> roles = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Set<UserSubscription> subscriptions = new HashSet<>();
+
+    @ManyToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Set<UserTravelPlan> travelPlans = new HashSet<>();
 }
 
